@@ -45,8 +45,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install package
-        run: pip install -e .
+      - name: Install package with console extra
+        run: pip install -e ".[console]"
       - name: Import all modules
         run: |
           python -c "import searchlense"
