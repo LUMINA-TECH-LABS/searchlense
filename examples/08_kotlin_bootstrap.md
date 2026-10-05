@@ -56,7 +56,7 @@ class SearchlenseBridge : AutoCloseable {
         private val VENV_DIR = File(System.getProperty("user.home"), ".searchlense/venv")
 
         private const val WHEEL_URL =
-            "https://github.com/<owner>/searchlense/releases/download/v0.1.0/searchlense-0.1.0-py3-none-any.whl"
+            "https://github.com/LUMINA-TECH-LABS/searchlense/releases/download/v0.1.0/searchlense-0.1.0-py3-none-any.whl"
 
         private fun venvPython(): String {
             val exe = if (System.getProperty("os.name").lowercase().contains("win"))
