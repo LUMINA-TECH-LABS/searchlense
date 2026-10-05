@@ -25,13 +25,13 @@ public class SearchlenseBridge implements AutoCloseable {
         System.getProperty("user.home") + File.separator + ".searchlense" + File.separator + "venv";
 
     private static final String WHEEL_URL =
-        "https://github.com/<owner>/searchlense/releases/download/v0.1.0/searchlense-0.1.0-py3-none-any.whl";
+        "https://github.com/LUMINA-TECH-LABS/searchlense/releases/download/v0.1.0/searchlense-0.1.0-py3-none-any.whl";
 
     public SearchlenseBridge() throws IOException, InterruptedException {
         ensureInstalled();
         String python = venvPython();
         ProcessBuilder pb = new ProcessBuilder(python, "-m", "searchlense.bridge");
-        pb.redirectErrorStream(false); // keep stderr for logs, stdout for JSON
+        pb.redirectErrorStream(false);
         pb.redirectError(ProcessBuilder.Redirect.INHERIT);
         this.process = pb.start();
         this.stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
@@ -47,13 +47,10 @@ public class SearchlenseBridge implements AutoCloseable {
 
     private static void ensureInstalled() throws IOException, InterruptedException {
         if (Files.exists(Paths.get(venvPython()))) {
-            return; // already installed
+            return;
         }
-        // 1. create venv
         run("python", "-m", "venv", VENV_DIR);
-        // 2. upgrade pip
         run(venvPython(), "-m", "pip", "install", "--upgrade", "pip");
-        // 3. install the wheel from GitHub Release
         run(venvPython(), "-m", "pip", "install", WHEEL_URL);
     }
 
@@ -76,12 +73,11 @@ public class SearchlenseBridge implements AutoCloseable {
     }
 
     /** Blocking pause check for Mode B. Call inside your agent's loop. */
-    public void checkpoint() throws IOException, InterruptedException {
+    public void checkpoint() throws IOException {
         send("{\"cmd\":\"checkpoint\"}");
         String line;
         while ((line = readLine()) != null) {
             if (line.contains("\"ack\":\"checkpoint\"")) return;
-            // You can also dispatch other events here if you want.
         }
     }
 
