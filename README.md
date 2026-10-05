@@ -18,38 +18,63 @@ You bring the provider. `searchlense` gives you:
 
 ## What it looks like
 
-Run a session, pause it mid-search, rewind, resume. The event stream is the
-search, unfolding in order — and you control the playback.
+`searchlense` doesn't search. It turns a search — yours, or your agent's —
+into a timeline you can play, pause, rewind, and inspect. Here is a real
+search against Wikipedia's public API, streamed through searchlense:
 
 ```
-* [0] session_start    query='history of the printing press'
-? [1] query_formed     'history of the printing press' via DemoProvider
-. [2] note             planning search for: 'history of the printing press'
+* [  0] session_start    query='quantum computing for beginners'
+? [  1] query_formed     'quantum computing for beginners' via WikipediaProvider
+. [  2] note             searching Wikipedia (en) for: 'quantum computing for beginners'
+S [  3] source_found     IBM Quantum Platform  (https://en.wikipedia.org/wiki/IBM_Quantum_Platform)
+S [  4] source_found     Quantum error correction  (https://en.wikipedia.org/wiki/Quantum_error_correction)
+S [  5] source_found     Shor code  (https://en.wikipedia.org/wiki/Shor_code)
+I [  6] image_found      Shor code
+S [  7] source_found     Five-qubit error correcting code  (https://en.wikipedia.org/wiki/Five-qubit_error_correcting_code)
+S [  8] source_found     Loop quantum gravity  (https://en.wikipedia.org/wiki/Loop_quantum_gravity)
+I [  9] image_found      Loop quantum gravity
+S [ 10] source_found     Microsoft Azure  (https://en.wikipedia.org/wiki/Microsoft_Azure)
+I [ 11] image_found      Microsoft Azure
+S [ 12] source_found     Suhail Zubairy  (https://en.wikipedia.org/wiki/Suhail_Zubairy)
+S [ 13] source_found     Chuck Easttom  (https://en.wikipedia.org/wiki/Chuck_Easttom)
+= [ 14] result_ready     Found 8 Wikipedia articles for 'quantum computing for beginners'.
+# [ 15] session_end      reason=provider_done
+```
+
+Every source, image, and result is a single event on the timeline. The user
+can pause mid-stream, rewind to look at any image, inspect a source, then
+resume from the live edge:
+
+```
+* [  0] session_start    query='history of the printing press'
+? [  1] query_formed     'history of the printing press' via DemoProvider
+. [  2] note             planning search for: 'history of the printing press'
 
 --- USER: PAUSE ---
 
-S [3] source_found     Overview of history of the printing press
+S [  3] source_found     Overview of history of the printing press
 
 --- USER: REWIND 3 ---
 
 --- USER: RESUME ---
 
-? [1] query_formed     'history of the printing press' via DemoProvider
-. [2] note             planning search for: 'history of the printing press'
-S [3] source_found     Overview of history of the printing press
-S [4] source_found     Deep dive: history of the printing press
-I [5] image_found      Diagram of history of the printing press
-V [6] video_found      Explained: history of the printing press
-- [7] snippet_extracted Key sentence about history of the printing press...
-= [8] result_ready     Here is what I found about history of the printing press.
-# [9] session_end      reason=provider_done
-
-session complete
+? [  1] query_formed     'history of the printing press' via DemoProvider
+. [  2] note             planning search for: 'history of the printing press'
+S [  3] source_found     Overview of history of the printing press
+S [  4] source_found     Deep dive: history of the printing press
+I [  5] image_found      Diagram of history of the printing press
+V [  6] video_found      Explained: history of the printing press
+- [  7] snippet_extracted Key sentence about history of the printing press...
+= [  8] result_ready     Here is what I found about history of the printing press.
+# [  9] session_end      reason=provider_done
 ```
 
-Notice what happened: the pause froze the view at event #3, the rewind moved
-the cursor back to event #1, and the resume played forward from there. The
-agent never stopped — only the *view* did. That is the DVR.
+The pause froze the view at event #3. The rewind moved the cursor back to
+event #1. The resume played forward from there. The agent never stopped —
+only the *view* did. That is the DVR.
+
+A complete reference provider — real search, real data, no API key, no
+scraping — is in `examples/09_real_provider.py`.
 
 ## Two integration modes
 
@@ -142,6 +167,23 @@ async def main():
 asyncio.run(main())
 ```
 
+## Real search example
+
+`examples/09_real_provider.py` wraps Wikipedia's public API and streams real
+search results through searchlense. Zero dependencies beyond the standard
+library, no API key, no scraping. Use it as a template for your own provider.
+
+```python
+from searchlense import Session, ConsoleRenderer
+from examples.real_provider import WikipediaProvider  # illustrative import
+
+session = Session(
+    provider=WikipediaProvider(limit=8),
+    renderer=ConsoleRenderer(),
+)
+await session.run("quantum computing for beginners")
+```
+
 ## Non-Python agents (Java, Kotlin, Node, Go, Rust, C#, ...)
 
 Any language that can spawn a subprocess can drive `searchlense`. The pattern
@@ -164,13 +206,18 @@ Kotlin bootstrap code with no external libraries.
 
 Core is pure Python stdlib plus `rich` (used by the console renderer).
 
-No search APIs. No scrapers. No network code in the library itself.
+No search APIs. No scrapers. No network code in the library itself. Search
+sources are always supplied by you, in your code, as a provider.
 
 ## Status
 
-v0.1.0 — early. Ships with a demo provider. The bridge, ledger, controller,
-and all three Python renderers are functional. Real search providers
-(DuckDuckGo, LangChain, etc.) are on the roadmap for v0.2.
+v0.1.0 — early. Ships with a demo provider and a Wikipedia reference provider.
+The bridge, ledger, controller, and all three Python renderers are functional.
+
+Roadmap:
+- v0.2: more reference providers (DuckDuckGo via a proxy, Brave Search API, LangChain adapter)
+- v0.3: JS/Go/Rust ports following `SPEC.md`
+- v0.4: Web UI renderer
 
 ## License
 
