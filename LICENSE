@@ -19,3 +19,48 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## 2. `pyproject.toml`
+
+```toml
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "searchlense"
+version = "0.1.0"
+description = "A DVR for agentic search: observe, pause, rewind, and interact with an agent's search in real time."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "searchlense contributors" }]
+keywords = ["agents", "search", "observability", "llm", "framework", "dvr"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.23"]
+
+[project.urls]
+Homepage = "https://github.com/LUMINA-TECH-LABS/searchlense"
+Repository = "https://github.com/LUMINA-TECH-LABS/searchlense"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
