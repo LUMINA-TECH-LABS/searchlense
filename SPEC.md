@@ -208,13 +208,20 @@ explicitly so implementers are not surprised.
 
 A language that wants zero-install consumption should:
 
-1. Query the GitHub API for the latest release of `<owner>/searchlense`.
+1. Query the GitHub API for the latest release of
+   `LUMINA-TECH-LABS/searchlense`.
 2. Find the wheel asset (`*.whl`).
 3. Create a Python virtual environment in a stable cache directory
    (recommended: `~/.searchlense/venv`).
 4. `pip install <wheel-url>` into that venv.
 5. Spawn `<venv>/bin/python -m searchlense.bridge`.
 6. Cache the venv; do not reinstall on every launch.
+
+The canonical wheel URL for v0.1.0 is:
+
+```
+https://github.com/LUMINA-TECH-LABS/searchlense/releases/download/v0.1.0/searchlense-0.1.0-py3-none-any.whl
+```
 
 Requirements at runtime:
 
